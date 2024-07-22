@@ -1,6 +1,40 @@
-import React from 'react';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/auth/auth_context";
 
 const SignUp = ({ setNewUser }) => {
+
+  const nav = useNavigate();
+  const { signUp } = useAuth();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    password2: '',
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData, 
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) =>{
+    e.preventDefault();
+    try {
+      if(formData.password !== formData.password2) {
+        throw 'Password Do Not Match'
+      } else {
+        await signUp(formData);
+        nav('/dashboard');
+      }
+    } catch (err) {
+      console.error(err)
+    }
+    
+  }
+
   const handleClick = () => {
     setNewUser(false);
   };
@@ -8,13 +42,14 @@ const SignUp = ({ setNewUser }) => {
   return (
     <div className='forms'>
       <h2>SignUp</h2>
-      <form autoComplete='off'>
+      <form autoComplete='off' onSubmit={handleSubmit}>
         <label htmlFor='name1'>Name: </label>
         <input
           type='text'
           id='name1'
           name='name'
           placeholder='First and Last Name'
+          onChange={handleChange}
         />
         <label htmlFor='email1'>Email: </label>
         <input
@@ -22,6 +57,7 @@ const SignUp = ({ setNewUser }) => {
           id='email1'
           name='email'
           placeholder='Email'
+          onChange={handleChange}
         />
         <label htmlFor='password1'>Password: </label>
         <input
@@ -30,6 +66,7 @@ const SignUp = ({ setNewUser }) => {
           name='password'
           placeholder='Password'
           minLength='6'
+          onChange={handleChange}
         />
         <input
           type='password'
@@ -37,6 +74,7 @@ const SignUp = ({ setNewUser }) => {
           name='password2'
           placeholder='Confirm Password'
           minLength='6'
+          onChange={handleChange}
         />
         <button type='submit'>Sign In</button>
       </form>
